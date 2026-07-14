@@ -134,7 +134,7 @@ export const DatabasePanel: React.FC = () => {
               interactionsList.map((inter) => (
                 <div key={inter.id} className="db-timeline-item hover-glow">
                   <div className="db-timeline-marker">
-                    <span className="badge-type">{inter.interaction_type}</span>
+                    <span className={`badge-type ${inter.interaction_type.toLowerCase()}`}>{inter.interaction_type}</span>
                   </div>
                   <div className="db-timeline-details">
                     <div className="db-timeline-header">

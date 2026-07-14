@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../store/store';
 import {
@@ -13,7 +13,6 @@ import {
   fetchFollowups,
 } from '../store/interactionSlice';
 import { CheckCircle, AlertCircle, X } from 'lucide-react';
-import { VoiceRecorderModal } from './VoiceRecorderModal';
 
 export const StructuredForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,13 +31,6 @@ export const StructuredForm: React.FC = () => {
     errorMessage,
     editingInteractionId,
   } = useSelector((state: RootState) => state.interaction);
-
-  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
-
-  // Voice Recording Click Handler
-  const handleVoiceNoteClick = () => {
-    setIsVoiceModalOpen(true);
-  };
 
   // Submit the Form
   const handleSubmit = async (e: React.FormEvent) => {
@@ -206,14 +198,7 @@ export const StructuredForm: React.FC = () => {
           />
         </div>
 
-        <div onClick={handleVoiceNoteClick} className="voice-note-link">
-          <span className="mic-icon">🎤</span>
-          <span className="link-text">Simulate Voice Logging (PhRMA Compliant)</span>
-        </div>
 
-        {isVoiceModalOpen && (
-          <VoiceRecorderModal onClose={() => setIsVoiceModalOpen(false)} />
-        )}
 
         {/* Section: Materials Shared */}
         <div className="form-section-title">Materials Shared / Samples Distributed</div>

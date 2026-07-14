@@ -18,8 +18,6 @@ import {
   BookOpen,
   CheckCircle2,
   FileSpreadsheet,
-  Smile,
-  CheckSquare,
 } from 'lucide-react';
 
 export const DatabasePanel: React.FC = () => {
@@ -43,46 +41,8 @@ export const DatabasePanel: React.FC = () => {
     dispatch(updateField({ field: 'hcpName', value: name }));
   };
 
-  // KPI Calculations
-  const totalHcps = hcpsList.length;
-  const totalInteractions = interactionsList.length;
-  const pendingFollowups = followupsList.filter(f => f.status?.toLowerCase() === 'pending').length;
-  const positiveCount = interactionsList.filter(i => i.sentiment?.toLowerCase() === 'positive').length;
-  const positivePct = totalInteractions > 0 ? Math.round((positiveCount / totalInteractions) * 100) : 0;
-
   return (
     <div className="db-panel-card animate-fade-in">
-      {/* KPI Dashboard metrics */}
-      <div className="msl-kpi-bar">
-        <div className="kpi-card">
-          <div className="kpi-header">
-            <Users className="kpi-icon text-blue" size={16} />
-            <span>Target HCPs</span>
-          </div>
-          <div className="kpi-num">{totalHcps}</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-header">
-            <MessageSquare className="kpi-icon text-green" size={16} />
-            <span>Logged Contacts</span>
-          </div>
-          <div className="kpi-num">{totalInteractions}</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-header">
-            <CheckSquare className="kpi-icon text-pink" size={16} />
-            <span>Pending Actions</span>
-          </div>
-          <div className="kpi-num">{pendingFollowups}</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-header">
-            <Smile className="kpi-icon text-purple" size={16} />
-            <span>Sentiment Efficacy</span>
-          </div>
-          <div className="kpi-num">{positivePct}%</div>
-        </div>
-      </div>
 
       <div className="db-panel-header">
         <div className="db-title-group">

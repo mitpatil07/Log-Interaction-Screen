@@ -117,10 +117,10 @@ export const ChatInterface: React.FC = () => {
           <button
             type="button"
             className="quick-action-chip"
-            onClick={() => handleQuickAction("Search previous interactions for Dr. Sarah Jenkins (HCP ID 1)")}
+            onClick={() => handleQuickAction("Search previous interactions for Dr. Elena Rostova (HCP ID 3)")}
             disabled={isLoading}
           >
-            🔍 Search Jenkins History
+            🔍 Search Rostova History
           </button>
           <button
             type="button"

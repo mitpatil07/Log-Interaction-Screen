@@ -32,6 +32,24 @@ Base.metadata.create_all(bind=engine)
 # Initialize FastAPI App
 app = FastAPI(title="AI-First CRM HCP Module Backend")
 
+@app.on_event("startup")
+def seed_database():
+    db = SessionLocal()
+    try:
+        if db.query(HCP).count() == 0:
+            seed_hcps = [
+                HCP(name="Dr. Rajesh Kumar", specialty="Cardiology", email="rajesh.kumar@example.com", npi_number="1234567890"),
+                HCP(name="Dr. Amit Patel", specialty="Oncology", email="amit.patel@example.com", npi_number="2345678901"),
+                HCP(name="Dr. Priya Sharma", specialty="Neurology", email="priya.sharma@example.com", npi_number="3456789012")
+            ]
+            db.add_all(seed_hcps)
+            db.commit()
+            print("Database seeded with Indian HCPs successfully.")
+    except Exception as e:
+        print(f"Error seeding database: {e}")
+    finally:
+        db.close()
+
 # Setup CORS
 app.add_middleware(
     CORSMiddleware,

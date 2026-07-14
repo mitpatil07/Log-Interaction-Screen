@@ -7,7 +7,24 @@ import { Bot, Settings, Send, Sparkles, RotateCcw } from 'lucide-react';
 export const ChatInterface: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { messages, isLoading } = useSelector((state: RootState) => state.chat);
+  const { hcpsList } = useSelector((state: RootState) => state.interaction);
   const [input, setInput] = useState('');
+
+  const firstHcp = hcpsList && hcpsList.length > 0 ? hcpsList[0] : null;
+  const secondHcp = hcpsList && hcpsList.length > 1 ? hcpsList[1] : firstHcp;
+  const thirdHcp = hcpsList && hcpsList.length > 2 ? hcpsList[2] : secondHcp;
+
+  const firstHcpName = firstHcp ? firstHcp.name : "Dr. Rajesh Kumar";
+  const firstHcpId = firstHcp ? firstHcp.id : 1;
+  const firstHcpLastName = firstHcpName.split(' ').pop() || '';
+
+  const secondHcpName = secondHcp ? secondHcp.name : "Dr. Amit Patel";
+  const secondHcpId = secondHcp ? secondHcp.id : 2;
+  const secondHcpLastName = secondHcpName.split(' ').pop() || '';
+
+  const thirdHcpName = thirdHcp ? thirdHcp.name : "Dr. Priya Sharma";
+  const thirdHcpId = thirdHcp ? thirdHcp.id : 3;
+  const thirdHcpLastName = thirdHcpName.split(' ').pop() || '';
   const historyRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll history container only (prevents viewport scrolling)
@@ -113,32 +130,34 @@ export const ChatInterface: React.FC = () => {
       {/* Bottom Panel */}
       <div className="ai-chat-footer">
         {/* Quick Suggestion Chips */}
-        <div className="ai-quick-chips">
-          <button
-            type="button"
-            className="quick-action-chip"
-            onClick={() => handleQuickAction("Search previous interactions for Dr. Elena Rostova (HCP ID 3)")}
-            disabled={isLoading}
-          >
-            🔍 Search Rostova History
-          </button>
-          <button
-            type="button"
-            className="quick-action-chip"
-            onClick={() => handleQuickAction("I met with Dr. Jenkins today (HCP 1) and we had an in-person meeting. She was very interested in the new efficacy data for our cardiovascular drug.")}
-            disabled={isLoading}
-          >
-            📝 Log Meeting
-          </button>
-          <button
-            type="button"
-            className="quick-action-chip"
-            onClick={() => handleQuickAction("Schedule a follow-up with Dr. Carter (ID 2) for next Friday 2026-07-17 to send the oncology booklet")}
-            disabled={isLoading}
-          >
-            📅 Schedule Follow-up
-          </button>
-        </div>
+        {hcpsList && hcpsList.length > 0 && (
+          <div className="ai-quick-chips">
+            <button
+              type="button"
+              className="quick-action-chip"
+              onClick={() => handleQuickAction(`Search previous interactions for ${thirdHcpName} (HCP ID ${thirdHcpId})`)}
+              disabled={isLoading}
+            >
+              🔍 Search {thirdHcpLastName} History
+            </button>
+            <button
+              type="button"
+              className="quick-action-chip"
+              onClick={() => handleQuickAction(`I met with ${firstHcpName} today (HCP ${firstHcpId}) and we had an in-person meeting. They were very interested in our latest drug update.`)}
+              disabled={isLoading}
+            >
+              📝 Log Meeting with {firstHcpLastName}
+            </button>
+            <button
+              type="button"
+              className="quick-action-chip"
+              onClick={() => handleQuickAction(`Schedule a follow-up with ${secondHcpName} (ID ${secondHcpId}) for next week to send our product folder`)}
+              disabled={isLoading}
+            >
+              📅 Schedule {secondHcpLastName} Follow-up
+            </button>
+          </div>
+        )}
 
         <form onSubmit={handleSend} className="ai-chat-input-form">
           <textarea

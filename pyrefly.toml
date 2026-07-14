@@ -1,0 +1,5 @@
+# Pyrefly Configuration File
+python-interpreter-path = "backend/venv/Scripts/python.exe"
+search_path = [
+    "backend"
+]

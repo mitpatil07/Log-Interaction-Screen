@@ -29,27 +29,6 @@ from app.schemas import (
 # Ensure Database Tables Exist
 Base.metadata.create_all(bind=engine)
 
-# Seed Database with sample HCPs if empty
-def seed_database():
-    db = SessionLocal()
-    try:
-        if db.query(HCP).count() == 0:
-            default_hcps = [
-                HCP(name="Dr. Sarah Jenkins", specialty="Cardiology", email="sarah.jenkins@cardio.com", npi_number="1234567890"),
-                HCP(name="Dr. James Carter", specialty="Oncology", email="james.carter@oncology.com", npi_number="0987654321"),
-                HCP(name="Dr. Elena Rostova", specialty="Neurology", email="elena.rostova@neuro.com", npi_number="5678901234"),
-            ]
-            db.add_all(default_hcps)
-            db.commit()
-            print("Database seeded with sample HCPs.")
-    except Exception as e:
-        db.rollback()
-        print(f"Error seeding database: {e}")
-    finally:
-        db.close()
-
-seed_database()
-
 # Initialize FastAPI App
 app = FastAPI(title="AI-First CRM HCP Module Backend")
 
@@ -81,7 +60,7 @@ def invoke_llm_with_fallback(messages, tools_list=None):
             model = ChatGroq(
                 temperature=0.1,
                 groq_api_key=settings.GROQ_API_KEY,
-                model_name=model_name
+                model=model_name
             )
             if tools_list:
                 model = model.bind_tools(tools_list)
@@ -101,7 +80,7 @@ def invoke_llm_with_fallback(messages, tools_list=None):
 # 1. LANGGRAPH AGENT TOOL DEFINITIONS
 # ==========================================
 
-def analyze_interaction_notes(topics_discussed: str) -> dict:
+def analyze_interaction_notes(topics_discussed: Optional[str]) -> dict:
     """Analyze discussion notes using LLM to extract summary, sentiment, and topics."""
     if not topics_discussed or not topics_discussed.strip():
         return {"summary": "", "sentiment": "Neutral", "extracted_topics": ""}

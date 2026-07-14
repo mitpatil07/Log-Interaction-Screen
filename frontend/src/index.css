@@ -126,6 +126,10 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
 /* Floating Navigation Header */
@@ -135,7 +139,7 @@ body {
   justify-content: space-between;
   background-color: var(--glass-bg);
   border: 1px solid var(--border-card);
-  margin: 1.5rem 1.5rem 0 1.5rem; /* Floating margins on top/left/right */
+  margin: 1.5rem 0 0 0; /* Align with container padding */
   padding: 0.95rem 1.75rem;
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
@@ -257,7 +261,7 @@ body {
 
 /* Main workspace layout */
 .main-content-layout {
-  padding: 1.5rem;
+  padding: 1.5rem 0; /* Align horizontal space with container padding */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;

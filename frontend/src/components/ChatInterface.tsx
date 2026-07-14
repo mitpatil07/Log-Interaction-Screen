@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../store/store';
 import { sendMessage, addLocalUserMessage, clearChat } from '../store/chatSlice';
-import { Bot, Settings, Stethoscope, Search, Calendar } from 'lucide-react';
+import { Bot, Settings } from 'lucide-react';
 
 export const ChatInterface: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,18 +19,6 @@ export const ChatInterface: React.FC = () => {
       });
     }
   }, [messages, isLoading]);
-
-  const quickActions = [
-    { label: 'Log Call (Jenkins)', prompt: 'I met with Dr. Sarah Jenkins today. We had a positive discussion about heart safety data. Shared cardiology booklets.', type: 'log' },
-    { label: 'History (Jenkins)', prompt: 'Search previous interactions for Dr. Sarah Jenkins', type: 'history' },
-    { label: 'Followup (Carter)', prompt: 'Schedule a follow-up with Dr. Carter for 2026-07-20 to send Oncology Booklet', type: 'followup' },
-  ];
-
-  const handleQuickAction = (promptText: string) => {
-    if (isLoading) return;
-    dispatch(addLocalUserMessage(promptText));
-    dispatch(sendMessage(promptText));
-  };
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,26 +106,6 @@ export const ChatInterface: React.FC = () => {
 
       {/* Bottom Panel */}
       <div className="ai-chat-footer">
-        {/* Quick action chips */}
-        <div className="ai-quick-chips">
-          {quickActions.map((qa, idx) => {
-            const Icon = qa.type === 'log' ? Stethoscope : qa.type === 'history' ? Search : Calendar;
-            return (
-              <button
-                key={idx}
-                type="button"
-                disabled={isLoading}
-                onClick={() => handleQuickAction(qa.prompt)}
-                className="quick-action-chip"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-              >
-                <Icon size={12} />
-                <span>{qa.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
         <form onSubmit={handleSend} className="ai-chat-input-form">
           <textarea
             value={input}

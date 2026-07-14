@@ -9,13 +9,12 @@ import { DatabasePanel } from './components/DatabasePanel';
 import { fetchHcps, fetchInteractions, fetchFollowups } from './store/interactionSlice';
 import {
   Activity,
-  Clipboard,
   MessageSquare,
   LayoutGrid,
 } from 'lucide-react';
 
 export const AppContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'form' | 'chat' | 'split'>('split');
+  const [activeTab, setActiveTab] = useState<'chat' | 'split'>('split');
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -41,13 +40,6 @@ export const AppContent: React.FC = () => {
         {/* Tab Controls directly in the Header */}
         <nav className="header-nav-tabs">
           <button
-            onClick={() => setActiveTab('form')}
-            className={`header-nav-item ${activeTab === 'form' ? 'active' : ''}`}
-          >
-            <Clipboard size={16} />
-            <span>Structured Form</span>
-          </button>
-          <button
             onClick={() => setActiveTab('chat')}
             className={`header-nav-item ${activeTab === 'chat' ? 'active' : ''}`}
           >
@@ -71,12 +63,6 @@ export const AppContent: React.FC = () => {
       {/* Main Content Workspace */}
       <main className="main-content-layout">
         <div className="dashboard-top-section">
-          {activeTab === 'form' && (
-            <div className="tab-panel single-view animate-fade-in">
-              <StructuredForm />
-            </div>
-          )}
-
           {activeTab === 'chat' && (
             <div className="tab-panel single-view animate-fade-in">
               <ChatInterface />

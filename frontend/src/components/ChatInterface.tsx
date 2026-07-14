@@ -7,11 +7,16 @@ export const ChatInterface: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { messages, isLoading } = useSelector((state: RootState) => state.chat);
   const [input, setInput] = useState('');
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const historyRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom of chat
+  // Auto-scroll history container only (prevents viewport scrolling)
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (historyRef.current) {
+      historyRef.current.scrollTo({
+        top: historyRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages, isLoading]);
 
   const quickActions = [
@@ -52,7 +57,7 @@ export const ChatInterface: React.FC = () => {
       </div>
 
       {/* Messages area */}
-      <div className="ai-chat-history">
+      <div ref={historyRef} className="ai-chat-history">
         {messages.map((msg) => {
           const isUser = msg.role === 'user';
           const isSystem = msg.role === 'system';
@@ -108,7 +113,6 @@ export const ChatInterface: React.FC = () => {
           </div>
         )}
 
-        <div ref={chatEndRef} />
       </div>
 
       {/* Bottom Panel */}

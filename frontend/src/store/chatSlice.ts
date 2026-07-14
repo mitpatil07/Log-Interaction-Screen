@@ -21,13 +21,7 @@ const generateSessionId = () => {
 };
 
 const initialState: ChatState = {
-  messages: [
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: "Hello! I am your AI CRM MSL Assistant. I can help you log interactions, write summaries, schedule followups, and search Dr. Smith or Dr. Jenkins' meeting history. You can toggle to the form view on the left, or tell me to do things here!",
-    },
-  ],
+  messages: [],
   isLoading: false,
   sessionId: generateSessionId(),
   error: null,
@@ -102,13 +96,7 @@ const chatSlice = createSlice({
       });
     },
     clearChat: (state) => {
-      state.messages = [
-        {
-          id: 'welcome',
-          role: 'assistant',
-          content: 'Chat session reset. How can I assist you with HCPs today?',
-        },
-      ];
+      state.messages = [];
       state.sessionId = generateSessionId();
       state.error = null;
     },

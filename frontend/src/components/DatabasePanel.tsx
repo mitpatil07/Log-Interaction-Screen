@@ -11,7 +11,6 @@ import {
   Calendar,
   RefreshCw,
   Clock,
-  User,
   BookOpen,
   CheckCircle2,
   FileSpreadsheet,
@@ -28,18 +27,34 @@ export const DatabasePanel: React.FC = () => {
     isLoadingLists,
   } = useSelector((state: RootState) => state.interaction);
 
- 
-
   const handleHcpClick = (name: string) => {
     dispatch(updateField({ field: 'hcpName', value: name }));
   };
 
+  const getInitials = (name: string) => {
+    if (!name) return 'HP';
+    const cleanName = name.replace(/^(Dr\.|Mr\.|Ms\.)\s+/i, '');
+    return cleanName
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+  };
+
+  const getSpecialtyColorClass = (specialty: string) => {
+    const spec = (specialty || '').toLowerCase();
+    if (spec.includes('cardio')) return 'cardiology';
+    if (spec.includes('onco')) return 'oncology';
+    if (spec.includes('neuro')) return 'neurology';
+    return 'default';
+  };
+
   return (
     <div className="db-panel-card animate-fade-in">
-
       <div className="db-panel-header">
         <div className="db-title-group">
-          <FileSpreadsheet className="db-header-icon" size={20} />
+          <FileSpreadsheet className="db-header-icon" size={24} />
           <h2>CRM Database Records</h2>
         </div>
       </div>
@@ -73,8 +88,8 @@ export const DatabasePanel: React.FC = () => {
       <div className="db-panel-content">
         {isLoadingLists && (
           <div className="db-loading-overlay">
-            <RefreshCw className="spinning text-muted" size={24} />
-            <p>Syncing records from database...</p>
+            <RefreshCw className="spinning text-muted" size={28} />
+            <p style={{ fontWeight: 600 }}>Syncing records from database...</p>
           </div>
         )}
 
@@ -82,29 +97,36 @@ export const DatabasePanel: React.FC = () => {
         {activeTab === 'hcps' && (
           <div className="db-list-grid">
             {hcpsList.length === 0 ? (
-              <p className="no-records-text">No HCP records found. Click Sync DB or check backend.</p>
+              <p className="no-records-text">No HCP records found.</p>
             ) : (
-              hcpsList.map((hcp) => (
-                <div
-                  key={hcp.id}
-                  onClick={() => handleHcpClick(hcp.name)}
-                  className="db-item-card hcp-card hover-glow"
-                  title="Click to select this doctor for the form"
-                >
-                  <div className="hcp-card-header">
-                    <User className="hcp-icon" size={18} />
-                    <h3>{hcp.name}</h3>
+              hcpsList.map((hcp) => {
+                const specialtyClass = getSpecialtyColorClass(hcp.specialty);
+                return (
+                  <div
+                    key={hcp.id}
+                    onClick={() => handleHcpClick(hcp.name)}
+                    className="db-item-card hcp-card hover-glow"
+                    title="Click to select this doctor for the form"
+                  >
+                    <div className="hcp-card-header">
+                      <div className={`hcp-avatar-badge ${specialtyClass}`}>
+                        {getInitials(hcp.name)}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <h3>{hcp.name}</h3>
+                        <span className={`specialty-badge ${specialtyClass}`}>{hcp.specialty}</span>
+                      </div>
+                    </div>
+                    <div className="hcp-card-body" style={{ marginTop: '0.5rem' }}>
+                      <p><strong>NPI Number:</strong> <code>{hcp.npi_number}</code></p>
+                      <p><strong>Email Address:</strong> {hcp.email}</p>
+                    </div>
+                    <div className="hcp-card-footer">
+                      <span>Click to auto-populate form</span>
+                    </div>
                   </div>
-                  <div className="hcp-card-body">
-                    <p><strong>Specialty:</strong> {hcp.specialty}</p>
-                    <p><strong>NPI:</strong> <code>{hcp.npi_number}</code></p>
-                    <p><strong>Email:</strong> {hcp.email}</p>
-                  </div>
-                  <div className="hcp-card-footer">
-                    <span>Click to auto-populate form</span>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         )}
@@ -117,14 +139,14 @@ export const DatabasePanel: React.FC = () => {
             ) : (
               interactionsList.map((inter) => (
                 <div key={inter.id} className="db-timeline-item hover-glow">
-                  <div className="db-timeline-marker">
-                    <span className={`badge-type ${inter.interaction_type.toLowerCase()}`}>{inter.interaction_type}</span>
-                  </div>
                   <div className="db-timeline-details">
                     <div className="db-timeline-header">
-                      <div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                         <div className="db-hcp-title-row">
                           <h3>{inter.hcp_name || 'Unknown HCP'}</h3>
+                          <span className={`badge-type ${inter.interaction_type.toLowerCase()}`}>
+                            {inter.interaction_type}
+                          </span>
                           {inter.sentiment && (
                             <span className={`sentiment-badge-pill ${inter.sentiment.toLowerCase()}`}>
                               {inter.sentiment === 'Positive' && '😊 Positive'}
@@ -133,8 +155,8 @@ export const DatabasePanel: React.FC = () => {
                             </span>
                           )}
                         </div>
-                        <span className="text-muted text-xs">
-                          <Clock size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
+                        <span className="text-muted" style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Clock size={12} />
                           {inter.date} {inter.time || ''}
                         </span>
                       </div>
@@ -146,21 +168,24 @@ export const DatabasePanel: React.FC = () => {
                         Edit in Form
                       </button>
                     </div>
+
                     {inter.topics_discussed && (
                       <div className="db-timeline-desc">
                         <strong>Discussion Notes:</strong>
-                        <p>{inter.topics_discussed}</p>
+                        <p style={{ marginTop: '0.25rem' }}>{inter.topics_discussed}</p>
                       </div>
                     )}
+
                     {inter.materials_shared && (
                       <div className="db-timeline-materials">
                         <strong>Shared Materials:</strong> {inter.materials_shared}
                       </div>
                     )}
+
                     {inter.extracted_topics && (
                       <div className="db-timeline-topics">
                         <strong>Extracted Key Topics:</strong>
-                        <div className="topics-pill-container">
+                        <div className="topics-pill-container" style={{ marginTop: '0.25rem' }}>
                           {inter.extracted_topics.split(',').map((topic, i) => (
                             <span key={i} className="topic-pill">
                               {topic.trim()}
@@ -169,8 +194,9 @@ export const DatabasePanel: React.FC = () => {
                         </div>
                       </div>
                     )}
+
                     {inter.summary && (
-                      <div className="db-timeline-summary">
+                      <div className="db-timeline-summary" style={{ marginTop: '0.5rem' }}>
                         <div className="summary-title-bar">
                           <BookOpen size={12} />
                           <span>AI Clinical Summary</span>
@@ -195,7 +221,9 @@ export const DatabasePanel: React.FC = () => {
                 <div key={fup.id} className="db-item-card followup-card hover-glow">
                   <div className="fup-card-header">
                     <Calendar className="fup-icon" size={18} />
-                    <h3>{fup.hcp_name || 'General Followup'}</h3>
+                    <div style={{ flex: 1 }}>
+                      <h3>{fup.hcp_name || 'General Followup'}</h3>
+                    </div>
                     <span className={`status-badge ${fup.status.toLowerCase()}`}>
                       <CheckCircle2 size={12} />
                       {fup.status}

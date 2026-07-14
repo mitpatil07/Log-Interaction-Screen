@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../store/store';
 import { sendMessage, addLocalUserMessage, clearChat } from '../store/chatSlice';
-import { Bot, Settings } from 'lucide-react';
+import { Bot, Settings, Send, Sparkles, RotateCcw } from 'lucide-react';
 
 export const ChatInterface: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -34,15 +34,22 @@ export const ChatInterface: React.FC = () => {
     dispatch(sendMessage(messageText));
   };
 
+  const handleQuickAction = (text: string) => {
+    setInput(text);
+  };
+
   return (
     <div className="ai-assistant-card">
       {/* Header */}
       <div className="ai-assistant-header">
         <div className="ai-header-main">
-          <Bot className="sidebar-logo bot-icon-lucide" size={20} style={{ marginRight: '6px' }} />
+          <Bot className="bot-icon-lucide" size={20} style={{ marginRight: '6px' }} />
           <h2>AI Assistant</h2>
+          <span className="sentiment-badge-pill positive" style={{ marginLeft: 'auto', fontSize: '0.65rem' }}>
+            <Sparkles size={10} /> Online
+          </span>
         </div>
-        <p className="ai-subtitle">Log Interaction details here via chat</p>
+        <p className="ai-subtitle">Log, schedule, and query interaction records seamlessly</p>
       </div>
 
       {/* Messages area */}
@@ -61,7 +68,7 @@ export const ChatInterface: React.FC = () => {
 
           if (isSystem) {
             return (
-              <div key={msg.id} className="chat-system-error">
+              <div key={msg.id} className="chat-system-error" style={{ color: 'var(--text-danger)', fontSize: '0.8rem', padding: '0.5rem 1rem', background: 'var(--bg-danger)', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-danger)', margin: '0.5rem 0' }}>
                 <p>{msg.content}</p>
               </div>
             );
@@ -78,7 +85,7 @@ export const ChatInterface: React.FC = () => {
                     {msg.tool_calls.map((tc: any, i: number) => (
                       <div key={i} className="chat-tool-item">
                         <Settings className="tool-gear spinning" size={12} />
-                        <span>Tool Executed: {tc.name}</span>
+                        <span>Tool Executed: <strong>{tc.name}</strong></span>
                       </div>
                     ))}
                   </div>
@@ -97,20 +104,47 @@ export const ChatInterface: React.FC = () => {
                 <span className="loader-dot" />
                 <span className="loader-dot" />
               </span>
-              <span className="loader-text">AI is processing interaction details...</span>
+              <span className="loader-text">AI is thinking...</span>
             </div>
           </div>
         )}
-
       </div>
 
       {/* Bottom Panel */}
       <div className="ai-chat-footer">
+        {/* Quick Suggestion Chips */}
+        <div className="ai-quick-chips">
+          <button
+            type="button"
+            className="quick-action-chip"
+            onClick={() => handleQuickAction("Search previous interactions for Dr. Sarah Jenkins (HCP ID 1)")}
+            disabled={isLoading}
+          >
+            🔍 Search Jenkins History
+          </button>
+          <button
+            type="button"
+            className="quick-action-chip"
+            onClick={() => handleQuickAction("I met with Dr. Jenkins today (HCP 1) and we had an in-person meeting. She was very interested in the new efficacy data for our cardiovascular drug.")}
+            disabled={isLoading}
+          >
+            📝 Log Meeting
+          </button>
+          <button
+            type="button"
+            className="quick-action-chip"
+            onClick={() => handleQuickAction("Schedule a follow-up with Dr. Carter (ID 2) for next Friday 2026-07-17 to send the oncology booklet")}
+            disabled={isLoading}
+          >
+            📅 Schedule Follow-up
+          </button>
+        </div>
+
         <form onSubmit={handleSend} className="ai-chat-input-form">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Describe Interaction..."
+            placeholder="Type your message or select a quick action above..."
             rows={2}
             disabled={isLoading}
             onKeyDown={(e) => {
@@ -120,15 +154,19 @@ export const ChatInterface: React.FC = () => {
               }
             }}
           />
-          <button type="submit" disabled={isLoading || !input.trim()} className="ai-log-btn">
-            <span className="ai-btn-top">AI</span>
-            <span className="ai-btn-bottom">Log</span>
+          <button type="submit" disabled={isLoading || !input.trim()} className="ai-log-btn" title="Send message to AI">
+            <Send size={18} />
           </button>
         </form>
-        <button onClick={() => dispatch(clearChat())} className="reset-session-link">
-          Reset Conversation Session
-        </button>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
+          <button onClick={() => dispatch(clearChat())} className="reset-session-link" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <RotateCcw size={12} />
+            <span>Reset Conversation Session</span>
+          </button>
+        </div>
       </div>
     </div>
   );
 };
+

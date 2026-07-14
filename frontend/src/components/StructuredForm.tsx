@@ -12,7 +12,7 @@ import {
   fetchInteractions,
   fetchFollowups,
 } from '../store/interactionSlice';
-import { CheckCircle, AlertCircle, X } from 'lucide-react';
+import { CheckCircle, AlertCircle, X, User, Calendar, Clock, FileText, Package, Users } from 'lucide-react';
 
 export const StructuredForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -129,11 +129,17 @@ export const StructuredForm: React.FC = () => {
         )}
 
         {/* Section: Interaction Details */}
-        <div className="form-section-title">Interaction Details</div>
+        <div className="form-section-title">
+          <FileText size={14} />
+          <span>Interaction Details</span>
+        </div>
 
         <div className="form-row">
           <div className="form-col">
-            <label>HCP Name</label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <User size={12} />
+              HCP Name
+            </label>
             <input
               type="text"
               value={hcpName}
@@ -143,7 +149,10 @@ export const StructuredForm: React.FC = () => {
             />
           </div>
           <div className="form-col">
-            <label>Interaction Type</label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <FileText size={12} />
+              Interaction Type
+            </label>
             <select
               value={interactionType}
               onChange={(e) => dispatch(updateField({ field: 'interactionType', value: e.target.value }))}
@@ -158,17 +167,23 @@ export const StructuredForm: React.FC = () => {
 
         <div className="form-row">
           <div className="form-col">
-            <label>Date</label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Calendar size={12} />
+              Date
+            </label>
             <input
               type="text"
               value={date}
               onChange={(e) => dispatch(updateField({ field: 'date', value: e.target.value }))}
-              placeholder="MM/DD/YYYY"
+              placeholder="YYYY-MM-DD"
               required
             />
           </div>
           <div className="form-col">
-            <label>Time</label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Clock size={12} />
+              Time
+            </label>
             <input
               type="text"
               value={time}
@@ -179,7 +194,10 @@ export const StructuredForm: React.FC = () => {
         </div>
 
         <div className="form-full-row">
-          <label>Attendees</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Users size={12} />
+            Attendees
+          </label>
           <input
             type="text"
             value={attendees}
@@ -189,7 +207,10 @@ export const StructuredForm: React.FC = () => {
         </div>
 
         <div className="form-full-row">
-          <label>Topics Discussed</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <FileText size={12} />
+            Topics Discussed
+          </label>
           <textarea
             value={topicsDiscussed}
             onChange={(e) => dispatch(updateField({ field: 'topicsDiscussed', value: e.target.value }))}
@@ -198,13 +219,17 @@ export const StructuredForm: React.FC = () => {
           />
         </div>
 
-
-
         {/* Section: Materials Shared */}
-        <div className="form-section-title">Materials Shared / Samples Distributed</div>
+        <div className="form-section-title">
+          <Package size={14} />
+          <span>Materials Shared / Samples Distributed</span>
+        </div>
         
         <div className="form-full-row">
-          <label>Materials Shared</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Package size={12} />
+            Materials Shared
+          </label>
           <input
             type="text"
             value={materialsShared}

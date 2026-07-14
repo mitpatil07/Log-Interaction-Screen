@@ -33,15 +33,17 @@ e:\Task\
 │   ├── src\
 │   │   ├── components\
 │   │   │   ├── ChatInterface.tsx    # Conversational Chat Screen with Tool badge indicators
+│   │   │   ├── DatabasePanel.tsx    # Live database records display for HCPs, Interactions & Follow-ups
 │   │   │   ├── StructuredForm.tsx   # Structured database input forms & AI summary trigger
 │   │   │   └── ThemeToggle.tsx      # Dark Mode / Light Mode switcher
 │   │   ├── store\
 │   │   │   ├── store.ts             # Redux Store config
 │   │   │   ├── chatSlice.ts         # Agent chat messages & loader states
 │   │   │   └── interactionSlice.ts  # Form entries & live syncing actions
+│   │   ├── App.css                  # Custom styling for UI transitions, tables and scrollbars
 │   │   ├── App.tsx                  # Main entry screen with Form, Chat, and Split dashboards
 │   │   ├── main.tsx                 # React mounting entrypoint
-│   │   └── index.css                # Premium responsive styling sheet
+│   │   └── index.css                # Premium responsive layout design & global CSS variables
 │   ├── .env.example          # Frontend configuration template
 │   ├── package.json              # NPM dependencies & scripts
 │   ├── tsconfig.json             # TypeScript settings
@@ -74,7 +76,7 @@ The agent binds 5 specific Python tools designed for life-science activities:
 
 ### 2. Live UI Form Synchronization
 To establish a premium user experience, AuraCRM features a state-sync architecture:
-* When the user types a request in the Chat view (e.g., *"Schedule a follow-up for Dr. Carter on July 10th to send product brochure"*), the agent calls the `schedule_followup` tool.
+* When the user types a request in the Chat view (e.g., *"Schedule a follow-up for Dr. Amit Patel on July 10th to send product brochure"*), the agent calls the `schedule_followup` tool.
 * The FastAPI endpoint parses the LangGraph message logs. If it detects a tool call execution during the turn, it extracts the parameters (e.g., `hcp_id`, `followup_date`, `task_description`).
 * These extracted details are sent back in a dedicated `form_sync` response block.
 * The Redux store receives this payload and immediately synchronizes the fields of the Structured Form on the left side of the screen. The user can toggle views or use the Dual Dashboard to watch the inputs update in real time.
@@ -122,9 +124,9 @@ To establish a premium user experience, AuraCRM features a state-sync architectu
    uvicorn app.agent:app --reload
    ```
    The backend will start running at `http://localhost:8000`. On initial startup, the database is generated locally (`sqlite:///./hcp_crm.db`) and **automatically seeded** with three sample HCPs:
-   * **Dr. Sarah Jenkins** (Cardiology, ID: `1`)
-   * **Dr. James Carter** (Oncology, ID: `2`)
-   * **Dr. Elena Rostova** (Neurology, ID: `3`)
+    * **Dr. Rajesh Kumar** (Cardiology, ID: `1`)
+    * **Dr. Amit Patel** (Oncology, ID: `2`)
+    * **Dr. Priya Sharma** (Neurology, ID: `3`)
 
 ---
 
@@ -151,6 +153,6 @@ To establish a premium user experience, AuraCRM features a state-sync architectu
 
 ## 💡 Recommended Test Prompts for AI Chat Agent
 Once both services are running, select the **Dual Dashboard** view in the UI and try entering these prompts in the chat box:
-1. **Search History**: *"Search previous interactions for Dr. Sarah Jenkins (HCP ID 1)"* -> The agent will invoke `search_hcp_history` and output the past logged records.
-2. **Log a Meeting**: *"I met with Dr. Jenkins today (HCP 1) and we had an in-person meeting. She was very interested in the new efficacy data for our cardiovascular drug."* -> The agent will call `log_interaction` (which automatically generates a summary) and update the form fields.
-3. **Schedule Followup**: *"Schedule a follow-up with Dr. Carter (ID 2) for next Friday 2026-07-17 to send the oncology booklet"* -> The agent will invoke `schedule_followup` to log it and fill in the follow-up form parameters.
+1. **Search History**: *"Search previous interactions for Dr. Rajesh Kumar (HCP ID 1)"* -> The agent will invoke `search_hcp_history` and output the past logged records.
+2. **Log a Meeting**: *"I met with Dr. Rajesh Kumar today (HCP 1) and we had an in-person meeting. He was very interested in the new efficacy data for our cardiovascular drug."* -> The agent will call `log_interaction` (which automatically generates a summary and sentiment analysis) and update the form fields.
+3. **Schedule Followup**: *"Schedule a follow-up with Dr. Amit Patel (ID 2) for next Friday 2026-07-17 to send the oncology booklet"* -> The agent will invoke `schedule_followup` to log it and fill in the follow-up form parameters.

@@ -31,11 +31,7 @@ export const DatabasePanel: React.FC = () => {
     isLoadingLists,
   } = useSelector((state: RootState) => state.interaction);
 
-  const handleRefresh = () => {
-    dispatch(fetchHcps());
-    dispatch(fetchInteractions());
-    dispatch(fetchFollowups());
-  };
+ 
 
   const handleHcpClick = (name: string) => {
     dispatch(updateField({ field: 'hcpName', value: name }));
@@ -49,15 +45,6 @@ export const DatabasePanel: React.FC = () => {
           <FileSpreadsheet className="db-header-icon" size={20} />
           <h2>CRM Database Records</h2>
         </div>
-        <button
-          onClick={handleRefresh}
-          className={`db-refresh-btn ${isLoadingLists ? 'spinning' : ''}`}
-          disabled={isLoadingLists}
-          title="Refresh database records"
-        >
-          <RefreshCw size={16} />
-          <span>Sync DB</span>
-        </button>
       </div>
 
       {/* Tabs */}

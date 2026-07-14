@@ -76,9 +76,7 @@ def invoke_llm_with_fallback(messages, tools_list=None):
                 raise e
     raise last_err
 
-# ==========================================
-# 1. LANGGRAPH AGENT TOOL DEFINITIONS
-# ==========================================
+# LANGGRAPH AGENT TOOL DEFINITIONS
 
 def analyze_interaction_notes(topics_discussed: Optional[str]) -> dict:
     """Analyze discussion notes using LLM to extract summary, sentiment, and topics."""
@@ -372,9 +370,7 @@ def schedule_followup(hcp_name: str, followup_date: str, task_description: str) 
 
 tools = [log_interaction, edit_interaction, search_hcp_history, summarize_interaction, schedule_followup]
 
-# ==========================================
-# 2. LANGGRAPH STATE GRAPH DEFINITION
-# ==========================================
+#LANGGRAPH STATE GRAPH DEFINITION
 
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]

@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../store/store';
 import {
-  fetchHcps,
-  fetchInteractions,
-  fetchFollowups,
   loadInteractionIntoForm,
   updateField,
 } from '../store/interactionSlice';

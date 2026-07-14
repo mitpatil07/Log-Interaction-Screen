@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../store/store';
 import { sendMessage, addLocalUserMessage, clearChat } from '../store/chatSlice';
+import { Bot, Settings, Stethoscope, Search, Calendar } from 'lucide-react';
 
 export const ChatInterface: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,9 +21,9 @@ export const ChatInterface: React.FC = () => {
   }, [messages, isLoading]);
 
   const quickActions = [
-    { label: '🩺 Log Call (Jenkins)', prompt: 'I met with Dr. Sarah Jenkins today. We had a positive discussion about heart safety data. Shared cardiology booklets.' },
-    { label: '🔍 History (Jenkins)', prompt: 'Search previous interactions for Dr. Sarah Jenkins' },
-    { label: '📅 Followup (Carter)', prompt: 'Schedule a follow-up with Dr. Carter for 2026-07-20 to send Oncology Booklet' },
+    { label: 'Log Call (Jenkins)', prompt: 'I met with Dr. Sarah Jenkins today. We had a positive discussion about heart safety data. Shared cardiology booklets.', type: 'log' },
+    { label: 'History (Jenkins)', prompt: 'Search previous interactions for Dr. Sarah Jenkins', type: 'history' },
+    { label: 'Followup (Carter)', prompt: 'Schedule a follow-up with Dr. Carter for 2026-07-20 to send Oncology Booklet', type: 'followup' },
   ];
 
   const handleQuickAction = (promptText: string) => {
@@ -50,7 +51,7 @@ export const ChatInterface: React.FC = () => {
       {/* Header */}
       <div className="ai-assistant-header">
         <div className="ai-header-main">
-          <span className="bot-icon">🤖</span>
+          <Bot className="sidebar-logo bot-icon-lucide" size={20} style={{ marginRight: '6px' }} />
           <h2>AI Assistant</h2>
         </div>
         <p className="ai-subtitle">Log Interaction details here via chat</p>
@@ -83,12 +84,12 @@ export const ChatInterface: React.FC = () => {
               <div className={`chat-bubble ${bubbleClass}`}>
                 <p className="chat-bubble-text">{msg.content}</p>
                 
-                {/* Visualizer for tool calls */}
+                 {/* Visualizer for tool calls */}
                 {!isUser && msg.tool_calls && msg.tool_calls.length > 0 && (
                   <div className="chat-tool-indicators">
                     {msg.tool_calls.map((tc: any, i: number) => (
                       <div key={i} className="chat-tool-item">
-                        <span className="tool-gear">⚙️</span>
+                        <Settings className="tool-gear spinning" size={12} />
                         <span>Tool Executed: {tc.name}</span>
                       </div>
                     ))}
@@ -119,17 +120,22 @@ export const ChatInterface: React.FC = () => {
       <div className="ai-chat-footer">
         {/* Quick action chips */}
         <div className="ai-quick-chips">
-          {quickActions.map((qa, idx) => (
-            <button
-              key={idx}
-              type="button"
-              disabled={isLoading}
-              onClick={() => handleQuickAction(qa.prompt)}
-              className="quick-action-chip"
-            >
-              {qa.label}
-            </button>
-          ))}
+          {quickActions.map((qa, idx) => {
+            const Icon = qa.type === 'log' ? Stethoscope : qa.type === 'history' ? Search : Calendar;
+            return (
+              <button
+                key={idx}
+                type="button"
+                disabled={isLoading}
+                onClick={() => handleQuickAction(qa.prompt)}
+                className="quick-action-chip"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              >
+                <Icon size={12} />
+                <span>{qa.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         <form onSubmit={handleSend} className="ai-chat-input-form">

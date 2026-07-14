@@ -1,0 +1,156 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState, AppDispatch } from '../store/store';
+import { sendMessage, addLocalUserMessage, clearChat } from '../store/chatSlice';
+
+export const ChatInterface: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { messages, isLoading } = useSelector((state: RootState) => state.chat);
+  const [input, setInput] = useState('');
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom of chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  const quickActions = [
+    { label: '🩺 Log Call (Jenkins)', prompt: 'I met with Dr. Sarah Jenkins today. We had a positive discussion about heart safety data. Shared cardiology booklets.' },
+    { label: '🔍 History (Jenkins)', prompt: 'Search previous interactions for Dr. Sarah Jenkins' },
+    { label: '📅 Followup (Carter)', prompt: 'Schedule a follow-up with Dr. Carter for 2026-07-20 to send Oncology Booklet' },
+  ];
+
+  const handleQuickAction = (promptText: string) => {
+    if (isLoading) return;
+    dispatch(addLocalUserMessage(promptText));
+    dispatch(sendMessage(promptText));
+  };
+
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const messageText = input;
+    setInput('');
+
+    // Add user message locally
+    dispatch(addLocalUserMessage(messageText));
+    
+    // Dispatch async agent message
+    dispatch(sendMessage(messageText));
+  };
+
+  return (
+    <div className="ai-assistant-card">
+      {/* Header */}
+      <div className="ai-assistant-header">
+        <div className="ai-header-main">
+          <span className="bot-icon">🤖</span>
+          <h2>AI Assistant</h2>
+        </div>
+        <p className="ai-subtitle">Log Interaction details here via chat</p>
+      </div>
+
+      {/* Messages area */}
+      <div className="ai-chat-history">
+        {messages.map((msg) => {
+          const isUser = msg.role === 'user';
+          const isSystem = msg.role === 'system';
+          
+          // Determine special CSS class based on content (e.g., if it starts with welcome or success ✅)
+          let bubbleClass = 'bubble-assistant-info';
+          if (isUser) {
+            bubbleClass = 'bubble-user-card';
+          } else if (msg.content.includes('✅') || msg.content.includes('logged successfully')) {
+            bubbleClass = 'bubble-assistant-success';
+          }
+
+          if (isSystem) {
+            return (
+              <div key={msg.id} className="chat-system-error">
+                <p>{msg.content}</p>
+              </div>
+            );
+          }
+
+          return (
+            <div key={msg.id} className={`chat-row ${isUser ? 'row-user' : 'row-assistant'}`}>
+              <div className={`chat-bubble ${bubbleClass}`}>
+                <p className="chat-bubble-text">{msg.content}</p>
+                
+                {/* Visualizer for tool calls */}
+                {!isUser && msg.tool_calls && msg.tool_calls.length > 0 && (
+                  <div className="chat-tool-indicators">
+                    {msg.tool_calls.map((tc: any, i: number) => (
+                      <div key={i} className="chat-tool-item">
+                        <span className="tool-gear">⚙️</span>
+                        <span>Tool Executed: {tc.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Loading Indicator */}
+        {isLoading && (
+          <div className="chat-row row-assistant">
+            <div className="chat-bubble bubble-assistant-info thinking-bubble">
+              <span className="loader-dots">
+                <span className="loader-dot" />
+                <span className="loader-dot" />
+                <span className="loader-dot" />
+              </span>
+              <span className="loader-text">AI is processing interaction details...</span>
+            </div>
+          </div>
+        )}
+
+        <div ref={chatEndRef} />
+      </div>
+
+      {/* Bottom Panel */}
+      <div className="ai-chat-footer">
+        {/* Quick action chips */}
+        <div className="ai-quick-chips">
+          {quickActions.map((qa, idx) => (
+            <button
+              key={idx}
+              type="button"
+              disabled={isLoading}
+              onClick={() => handleQuickAction(qa.prompt)}
+              className="quick-action-chip"
+            >
+              {qa.label}
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={handleSend} className="ai-chat-input-form">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Describe Interaction..."
+            rows={2}
+            disabled={isLoading}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(e);
+              }
+            }}
+          />
+          <button type="submit" disabled={isLoading || !input.trim()} className="ai-log-btn">
+            <span className="ai-btn-top">AI</span>
+            <span className="ai-btn-bottom">Log</span>
+          </button>
+        </form>
+        <button onClick={() => dispatch(clearChat())} className="reset-session-link">
+          Reset Conversation Session
+        </button>
+      </div>
+    </div>
+  );
+};
